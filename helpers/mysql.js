@@ -58,7 +58,7 @@ const update = (connection, database, table, data) => {
     return query;
   };
   const query = getQuery(table, data);
-
+  
   return new Promise((resolve, reject) => {
     connection.query(SqlString.format(query), (error, result) => {
       if (error) {
@@ -97,9 +97,37 @@ const search = (connection, database, table, filter = null) => {
   });
 };
 
+const deleteSql = (connection, database, table, filter = null) => {
+  const getQuery = (table, filter) => {
+    let query = '';
+
+    try {
+      query = filter ?
+        `USE ${database};DELETE FROM \`${table}\` WHERE ${filter}` :
+        `USE ${database};DELETE FROM \`${table}\``;
+    } catch (error) {
+      throw error;
+    }
+
+    return query;
+  };
+  const query = getQuery(table, filter);
+  console.log('**********', query)
+  return new Promise((resolve, reject) => {
+    connection.query(SqlString.format(query), (error, result) => {
+      if (error) {
+        reject(error);
+      }
+
+      resolve(result);
+    });
+  });
+};
+
 module.exports = {
   createConnection,
   insert,
   update,
-  search
+  search,
+  deleteSql
 };
